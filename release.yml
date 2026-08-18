@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tag must match the version in the script
+        run: |
+          VER="${GITHUB_REF_NAME#v}"
+          grep -q "^VERSION=\"$VER\"$" macaudit.sh \
+            || { echo "::error::tag $GITHUB_REF_NAME does not match VERSION in macaudit.sh"; exit 1; }
+
+      - name: Build a reproducible tarball
+        run: |
+          VER="${GITHUB_REF_NAME#v}"
+          mkdir -p "dist/macaudit-$VER"
+          cp macaudit.sh README.md LICENSE "dist/macaudit-$VER/"
+          chmod 755 "dist/macaudit-$VER/macaudit.sh"
+          tar --sort=name --owner=0 --group=0 --numeric-owner \
+              --mtime='UTC 1980-01-01' --format=gnu \
+              -C dist -czf "macaudit-$VER.tar.gz" "macaudit-$VER"
+          shasum -a 256 "macaudit-$VER.tar.gz" | tee checksum.txt
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VER="${GITHUB_REF_NAME#v}"
+          SHA=$(cut -d' ' -f1 checksum.txt)
+          cat > notes.md <<NOTES
+          ## Verifying this download
+
+          \`\`\`
+          shasum -a 256 macaudit-$VER.tar.gz
+          $SHA
+          \`\`\`
+
+          The archive is built by CI from \`$GITHUB_SHA\` with a reproducible \`tar\`
+          invocation, so you can rebuild it yourself and compare — see the README.
+
+          ## Homebrew formula
+
+          \`\`\`ruby
+          url "https://github.com/$GITHUB_REPOSITORY/releases/download/$GITHUB_REF_NAME/macaudit-$VER.tar.gz"
+          sha256 "$SHA"
+          \`\`\`
+          NOTES
+          gh release create "$GITHUB_REF_NAME" "macaudit-$VER.tar.gz" \
+            --title "macaudit $VER" --notes-file notes.md --verify-tag
