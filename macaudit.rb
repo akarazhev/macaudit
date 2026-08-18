@@ -1,11 +1,11 @@
 # Copy this into your tap repository as Formula/macaudit.rb, then:
-#   brew install YOURNAME/tap/macaudit
+#   brew install akarazhev/tap/macaudit
 #
 # The url and sha256 for each release are printed in that release's notes.
 class Macaudit < Formula
   desc "Read-only macOS audit report: apps, startup items, processes, security"
-  homepage "https://github.com/YOURNAME/macaudit"
-  url "https://github.com/YOURNAME/macaudit/releases/download/v1.3/macaudit-1.3.tar.gz"
+  homepage "https://github.com/akarazhev/macaudit"
+  url "https://github.com/akarazhev/macaudit/releases/download/v1.3/macaudit-1.3.tar.gz"
   sha256 "PASTE_THE_CHECKSUM_FROM_THE_RELEASE_NOTES"
   license "MIT"
 

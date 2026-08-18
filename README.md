@@ -31,13 +31,13 @@ It writes exactly two things: the report you asked for, and a small snapshot und
 Via Homebrew:
 
 ```sh
-brew install YOURNAME/tap/macaudit
+brew install akarazhev/tap/macaudit
 ```
 
 Or just take the file — it is one script and it has no install step:
 
 ```sh
-curl -fsSLO https://github.com/YOURNAME/macaudit/releases/latest/download/macaudit-1.3.tar.gz
+curl -fsSLO https://github.com/akarazhev/macaudit/releases/latest/download/macaudit-1.3.tar.gz
 shasum -a 256 macaudit-1.3.tar.gz     # compare against the checksum in the release notes
 tar xzf macaudit-1.3.tar.gz
 ./macaudit-1.3/macaudit.sh
